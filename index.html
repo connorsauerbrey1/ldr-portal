@@ -380,8 +380,9 @@ async function handleLogin() {
 }
 
 function showLoginError(msg) {
+  showPage('login');
   const el = document.getElementById('login-error');
-  el.textContent = msg; showEl('login-error');
+  if (el) { el.textContent = msg; showEl('login-error'); }
 }
 
 function signOut() {
