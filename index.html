@@ -395,12 +395,20 @@ async function loadDashboard(email) {
       callScript('getMember', { email }),
       callScript('getLeads', { email }),
     ]);
+    if (!member || !member.email) {
+      clearSession();
+      showPage('login');
+      showLoginError('Member not found. Please contact your property manager.');
+      return;
+    }
     state.member = member;
     state.leads = leads || [];
     renderDashboard();
     showPage('dashboard');
-  } catch {
+  } catch (err) {
+    clearSession();
     showPage('login');
+    showLoginError('Something went wrong loading your profile. Please try again.');
   }
 }
 
