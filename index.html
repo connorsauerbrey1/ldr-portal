@@ -337,15 +337,19 @@ window.addEventListener('load', () => {
 async function verifyAndLogin(token) {
   showPage('loading');
   try {
+    console.log('Verifying token...');
     const res = await callScript('verifyToken', { token });
+    console.log('Token result:', JSON.stringify(res));
     if (res.success) {
       setSession({ email: res.email, name: res.name });
+      console.log('Session set, loading dashboard for:', res.email);
       loadDashboard(res.email);
     } else {
       showPage('login');
       showLoginError('This link has expired. Please request a new one.');
     }
-  } catch {
+  } catch(e) {
+    console.log('Error:', e);
     showPage('login');
     showLoginError('Something went wrong. Please try again.');
   }
@@ -584,13 +588,18 @@ function showEl(id) { document.getElementById(id).classList.remove('hidden'); }
 function hideEl(id) { document.getElementById(id).classList.add('hidden'); }
 
 function showPage(page) {
-  document.getElementById('login-page').classList.add('hidden');
-  document.getElementById('dashboard-page').classList.add('hidden');
-  if (page === 'login') document.getElementById('login-page').classList.remove('hidden');
-  else if (page === 'dashboard') document.getElementById('dashboard-page').classList.remove('hidden');
-  else if (page === 'loading') {
-    document.getElementById('login-page').classList.remove('hidden');
-    document.getElementById('login-form-wrap').innerHTML = `<div style="text-align:center;padding:1rem 0"><div class="spinner"></div><p style="color:var(--ink-60);font-size:15px;">Signing you in...</p></div>`;
+  const loginPage = document.getElementById('login-page');
+  const dashPage = document.getElementById('dashboard-page');
+  loginPage.classList.add('hidden');
+  dashPage.classList.add('hidden');
+  if (page === 'login') {
+    loginPage.classList.remove('hidden');
+  } else if (page === 'dashboard') {
+    dashPage.classList.remove('hidden');
+  } else if (page === 'loading') {
+    loginPage.classList.remove('hidden');
+    const wrap = document.getElementById('login-form-wrap');
+    if (wrap) wrap.innerHTML = `<div style="text-align:center;padding:2rem 0"><div class="spinner"></div><p style="color:var(--ink-60);font-size:15px;margin-top:12px;">Signing you in...</p></div>`;
   }
 }
 
